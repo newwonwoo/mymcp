@@ -1,0 +1,235 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Personal MCP Hub (v2.3) — role/prompt/handoff/mistake/session orchestration
+
+Parameters:
+  ApiKey:
+    Type: String
+    NoEcho: true
+    Description: API Key for X-API-Key header authentication
+    MinLength: 32
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, prod]
+  BedrockModel:
+    Type: String
+    Default: anthropic.claude-3-5-sonnet-20241022-v2:0
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  McpHubFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub mcp-hub-${Stage}
+      CodeUri: src/
+      Handler: run.sh
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:24
+      Environment:
+        Variables:
+          PORT: '8080'
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          STAGE: !Ref Stage
+          API_KEY: !Ref ApiKey
+          BEDROCK_MODEL: !Ref BedrockModel
+          ROLES_TABLE: !Ref RolesTable
+          PROMPTS_TABLE: !Ref PromptsTable
+          PROJECTS_TABLE: !Ref ProjectsTable
+          PRESETS_TABLE: !Ref PresetsTable
+          SESSIONS_TABLE: !Ref SessionsTable
+          MISTAKES_TABLE: !Ref MistakesTable
+          PHASES_TABLE: !Ref PhasesTable
+          FAILURE_STORIES_TABLE: !Ref FailureStoriesTable
+          DECISIONS_TABLE: !Ref DecisionsTable
+      Events:
+        McpEndpoint:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref McpHubApi
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref RolesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref PromptsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ProjectsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref PresetsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref SessionsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref MistakesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref PhasesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref FailureStoriesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref DecisionsTable }
+        - Statement:
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/*
+
+  McpHubApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+      CorsConfiguration:
+        AllowOrigins:
+          - https://claude.ai
+          - https://*.claude.ai
+          - https://*.anthropic.com
+        AllowMethods:
+          - POST
+          - GET
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - X-API-Key
+          - Authorization
+          - Mcp-Session-Id
+        ExposeHeaders:
+          - Mcp-Session-Id
+        MaxAge: 600
+
+  RolesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-roles-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: role_name, AttributeType: S }
+      KeySchema:
+        - { AttributeName: role_name, KeyType: HASH }
+
+  PromptsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-prompts-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: role_name, AttributeType: S }
+        - { AttributeName: purpose_title, AttributeType: S }
+        - { AttributeName: purpose, AttributeType: S }
+      KeySchema:
+        - { AttributeName: role_name, KeyType: HASH }
+        - { AttributeName: purpose_title, KeyType: RANGE }
+      GlobalSecondaryIndexes:
+        - IndexName: purpose-index
+          KeySchema:
+            - { AttributeName: purpose, KeyType: HASH }
+          Projection: { ProjectionType: ALL }
+
+  ProjectsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-projects-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: project_id, AttributeType: S }
+      KeySchema:
+        - { AttributeName: project_id, KeyType: HASH }
+
+  PresetsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-presets-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: project_id, AttributeType: S }
+        - { AttributeName: created_status, AttributeType: S }
+      KeySchema:
+        - { AttributeName: project_id, KeyType: HASH }
+        - { AttributeName: created_status, KeyType: RANGE }
+
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-sessions-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: session_id, AttributeType: S }
+        - { AttributeName: project_id, AttributeType: S }
+        - { AttributeName: started_at, AttributeType: S }
+      KeySchema:
+        - { AttributeName: session_id, KeyType: HASH }
+      GlobalSecondaryIndexes:
+        - IndexName: project-time-index
+          KeySchema:
+            - { AttributeName: project_id, KeyType: HASH }
+            - { AttributeName: started_at, KeyType: RANGE }
+          Projection: { ProjectionType: ALL }
+
+  MistakesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-mistakes-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: mistake_id, AttributeType: S }
+        - { AttributeName: role_name, AttributeType: S }
+        - { AttributeName: category, AttributeType: S }
+      KeySchema:
+        - { AttributeName: mistake_id, KeyType: HASH }
+      GlobalSecondaryIndexes:
+        - IndexName: role-category-index
+          KeySchema:
+            - { AttributeName: role_name, KeyType: HASH }
+            - { AttributeName: category, KeyType: RANGE }
+          Projection: { ProjectionType: ALL }
+
+  PhasesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-phases-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: project_id, AttributeType: S }
+        - { AttributeName: phase_name, AttributeType: S }
+      KeySchema:
+        - { AttributeName: project_id, KeyType: HASH }
+        - { AttributeName: phase_name, KeyType: RANGE }
+
+  FailureStoriesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-failure-stories-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: project_id, AttributeType: S }
+        - { AttributeName: created_at, AttributeType: S }
+        - { AttributeName: status, AttributeType: S }
+      KeySchema:
+        - { AttributeName: project_id, KeyType: HASH }
+        - { AttributeName: created_at, KeyType: RANGE }
+      GlobalSecondaryIndexes:
+        - IndexName: project-status-index
+          KeySchema:
+            - { AttributeName: project_id, KeyType: HASH }
+            - { AttributeName: status, KeyType: RANGE }
+          Projection: { ProjectionType: ALL }
+
+  DecisionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub mcp-hub-decisions-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: decision_id, AttributeType: S }
+        - { AttributeName: scope, AttributeType: S }
+        - { AttributeName: active, AttributeType: S }
+      KeySchema:
+        - { AttributeName: decision_id, KeyType: HASH }
+      GlobalSecondaryIndexes:
+        - IndexName: scope-active-index
+          KeySchema:
+            - { AttributeName: scope, KeyType: HASH }
+            - { AttributeName: active, KeyType: RANGE }
+          Projection: { ProjectionType: ALL }
+
+Outputs:
+  ApiEndpoint:
+    Description: MCP Hub HTTPS endpoint (register this URL in claude.ai connectors)
+    Value: !Sub https://${McpHubApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/mcp
+  StackStage:
+    Value: !Ref Stage

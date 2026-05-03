@@ -1,0 +1,42 @@
+[
+  {
+    "role_name": "planner",
+    "display_name": "기획자",
+    "description": "요구사항·분석·문서화·매뉴얼 두 버전 관리",
+    "color": "#3B82F6",
+    "submodes": ["requirements", "docs", "manual"],
+    "default_active": true
+  },
+  {
+    "role_name": "designer",
+    "display_name": "디자이너",
+    "description": "UI/UX/카피·화면 명세 형식 준수",
+    "color": "#EC4899",
+    "submodes": ["ui", "ux", "copy", "spec"],
+    "default_active": false
+  },
+  {
+    "role_name": "architect",
+    "display_name": "아키텍트",
+    "description": "시스템 구조·API·DB·왜?에 답하는 인과 구조 강제",
+    "color": "#8B5CF6",
+    "submodes": ["system", "api", "data", "adr"],
+    "default_active": false
+  },
+  {
+    "role_name": "coder",
+    "display_name": "코더",
+    "description": "구현·디버그·리팩토링·테스트작성·근본 해결 우선",
+    "color": "#10B981",
+    "submodes": ["implement", "debug", "refactor", "test"],
+    "default_active": true
+  },
+  {
+    "role_name": "reviewer",
+    "display_name": "리뷰어",
+    "description": "코드 리뷰·검증·품질확인서·보안 사전 점검·실패스토리",
+    "color": "#F59E0B",
+    "submodes": ["review", "verify", "qa-doc", "security", "premortem"],
+    "default_active": false
+  }
+]
