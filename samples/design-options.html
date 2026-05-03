@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Design Options — Sun-jae Art Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Playfair+Display:wght@400;500;600&family=EB+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Pretendard:wght@300;400;500;600&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─── Tab chrome (시안 전환용 UI, 시안 톤과 무관) ─── */
+  :root {
+    --chrome-bg: #efefef;
+    --chrome-ink: #222;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--chrome-bg);
+    color: var(--chrome-ink);
+  }
+  .chrome {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(239, 239, 239, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #d8d8d8;
+    padding: 10px 16px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .chrome strong { font-weight: 600; }
+  .chrome .tabs { display: flex; gap: 6px; margin-left: auto; }
+  .chrome button {
+    border: 1px solid #c8c8c8; background: white;
+    padding: 6px 12px; border-radius: 999px; cursor: pointer;
+    font-size: 12px; font-weight: 500; color: #333;
+  }
+  .chrome button.active {
+    background: #1a1a1a; color: white; border-color: #1a1a1a;
+  }
+  .chrome .meta { color: #777; font-size: 12px; }
+  .stage { display: none; }
+  .stage.active { display: block; }
+
+  /* ════════════════════════════════════════════════════════════════
+     OPTION 1 — WARM EDITORIAL
+     canvas warm off-white / serif Fraunces / accent terracotta
+     ════════════════════════════════════════════════════════════════ */
+  .o1 {
+    --canvas: #f7f5f0;
+    --ink: #1a1a1a;
+    --muted: #8e8a82;
+    --hairline: #e5e2da;
+    --accent: #b8462a;
+    --serif: "Fraunces", "Cormorant Garamond", Georgia, serif;
+    --sans: "Inter", "Pretendard", -apple-system, sans-serif;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .o1 .nav {
+    padding: 24px 24px 20px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .o1 .logo {
+    font-family: var(--serif);
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .o1 .nav-links { display: flex; gap: 24px; font-size: 13px; color: var(--muted); }
+  .o1 .nav-links a { color: inherit; text-decoration: none; }
+  .o1 .nav-links a:hover { color: var(--ink); }
+
+  .o1 .hero {
+    padding: 64px 24px 48px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .o1 .hero .eyebrow {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 24px;
+  }
+  .o1 .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(42px, 9vw, 96px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 32px;
+  }
+  .o1 .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .o1 .hero .meta {
+    display: flex; gap: 48px; flex-wrap: wrap;
+    font-size: 13px; color: var(--muted);
+    border-top: 1px solid var(--hairline);
+    padding-top: 24px;
+    max-width: 720px;
+  }
+  .o1 .hero .meta dt { font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .o1 .hero .meta dd { margin: 0; }
+
+  .o1 .hero-image {
+    margin: 32px -24px 0;
+    aspect-ratio: 3/2;
+    background: linear-gradient(135deg, #d4c4a8 0%, #a08560 60%, #6b4f2c 100%);
+    background-image:
+      linear-gradient(135deg, rgba(212,196,168,0.6), rgba(107,79,44,0.5)),
+      url("https://picsum.photos/1600/1067?random=1");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .o1 .grid {
+    padding: 64px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 48px 24px;
+  }
+  .o1 .work { }
+  .o1 .work .ph {
+    aspect-ratio: 4/5;
+    background: #d8d2c5;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .o1 .work .ph img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .o1 .work:hover .ph img { transform: scale(1.02); }
+  .o1 .work .artist {
+    font-family: var(--serif);
+    font-size: 18px; font-weight: 500;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .o1 .work .title {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .o1 .work .year {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .o1 .about {
+    padding: 96px 24px;
+    border-top: 1px solid var(--hairline);
+    background: #f0ece2;
+  }
+  .o1 .about .eyebrow {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 24px;
+  }
+  .o1 .about p {
+    font-family: var(--serif);
+    font-size: clamp(20px, 3vw, 28px);
+    line-height: 1.5;
+    max-width: 720px;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  .o1 .footer {
+    padding: 48px 24px;
+    border-top: 1px solid var(--hairline);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex; gap: 48px; flex-wrap: wrap;
+  }
+  .o1 .footer h4 {
+    font-family: var(--serif);
+    color: var(--ink);
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     OPTION 2 — COOL MUSEUM
+     pure white / Playfair / 흑백 only / 엄격한 도록 톤
+     ════════════════════════════════════════════════════════════════ */
+  .o2 {
+    --canvas: #ffffff;
+    --ink: #0b0b0b;
+    --muted: #6e6e6e;
+    --hairline: #e8e8e8;
+    --serif: "Playfair Display", "Times New Roman", serif;
+    --sans: "Inter", "Pretendard", -apple-system, sans-serif;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .o2 .nav {
+    padding: 32px 32px 24px;
+    display: flex; flex-direction: column; gap: 20px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .o2 .logo {
+    font-family: var(--serif);
+    font-size: 28px; font-weight: 400;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+  .o2 .logo em {
+    font-style: italic;
+  }
+  .o2 .nav-links {
+    display: flex; gap: 32px; justify-content: center;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .o2 .nav-links a {
+    color: var(--ink); text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+  .o2 .nav-links a:hover { border-bottom-color: var(--ink); }
+
+  .o2 .hero {
+    padding: 80px 32px 64px;
+    text-align: center;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .o2 .hero .eyebrow {
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 32px;
+  }
+  .o2 .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 8vw, 88px);
+    line-height: 1.1;
+    margin: 0 0 24px;
+    letter-spacing: -0.01em;
+  }
+  .o2 .hero h1 em { font-style: italic; }
+  .o2 .hero .dates {
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .o2 .hero-image {
+    margin: 64px 32px 0;
+    aspect-ratio: 16/10;
+    background-image: url("https://picsum.photos/1600/1000?random=2&grayscale");
+    background-size: cover; background-position: center;
+    filter: contrast(1.05);
+  }
+
+  .o2 .grid {
+    padding: 96px 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 64px 32px;
+  }
+  .o2 .work .ph {
+    aspect-ratio: 1/1;
+    margin-bottom: 16px;
+    overflow: hidden;
+    filter: grayscale(1);
+  }
+  .o2 .work .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .o2 .work .num {
+    font-size: 10px; letter-spacing: 0.15em;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .o2 .work .artist {
+    font-family: var(--serif);
+    font-size: 20px; font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .o2 .work .title {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .o2 .about {
+    padding: 120px 32px;
+    border-top: 1px solid var(--ink);
+    text-align: center;
+  }
+  .o2 .about p {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 32px);
+    line-height: 1.55;
+    max-width: 720px;
+    margin: 0 auto;
+    font-weight: 400;
+    font-style: italic;
+  }
+  .o2 .about p::before, .o2 .about p::after { content: '"'; }
+
+  .o2 .footer {
+    padding: 64px 32px;
+    border-top: 1px solid var(--hairline);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex; gap: 48px; flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  .o2 .footer strong {
+    color: var(--ink);
+    font-weight: 500;
+    display: block; margin-bottom: 6px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     OPTION 3 — SOFT GRADIENT
+     soft cream gradient / EB Garamond / 부드러운 모바일 친화 큐레이션
+     ════════════════════════════════════════════════════════════════ */
+  .o3 {
+    --canvas: #fafaf6;
+    --canvas-2: #f3eee5;
+    --ink: #222222;
+    --muted: #898680;
+    --hairline: #e9e3d6;
+    --accent: #5d6f5d;     /* 올리브 */
+    --serif: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+    --sans: "Inter", "Pretendard", -apple-system, sans-serif;
+    background: linear-gradient(180deg, var(--canvas) 0%, var(--canvas-2) 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  .o3 .nav {
+    padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .o3 .logo {
+    font-family: var(--serif);
+    font-size: 24px; font-weight: 500;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .o3 .nav-links { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+  .o3 .nav-links a { color: inherit; text-decoration: none; }
+
+  .o3 .hero {
+    padding: 48px 24px 40px;
+  }
+  .o3 .hero .eyebrow {
+    font-size: 12px; color: var(--accent);
+    font-style: italic;
+    margin-bottom: 16px;
+    font-family: var(--serif);
+  }
+  .o3 .hero h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(40px, 8vw, 80px);
+    line-height: 1.1;
+    margin: 0 0 24px;
+    letter-spacing: -0.01em;
+  }
+  .o3 .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .o3 .hero .lead {
+    font-family: var(--serif);
+    font-size: clamp(18px, 2.4vw, 22px);
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 600px;
+    font-style: italic;
+  }
+  .o3 .hero-image {
+    margin: 32px 0 0;
+    aspect-ratio: 3/2;
+    border-radius: 4px;
+    overflow: hidden;
+    background-image: url("https://picsum.photos/1600/1067?random=3&blur=1");
+    background-size: cover; background-position: center;
+    box-shadow: 0 30px 60px -20px rgba(120, 100, 70, 0.18);
+  }
+
+  .o3 .grid {
+    padding: 80px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 40px 20px;
+  }
+  .o3 .work .ph {
+    aspect-ratio: 3/4;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 12px 24px -16px rgba(120, 100, 70, 0.25);
+  }
+  .o3 .work .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .o3 .work .artist {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .o3 .work .title {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .o3 .about {
+    padding: 80px 24px;
+    text-align: left;
+  }
+  .o3 .about p {
+    font-family: var(--serif);
+    font-size: clamp(20px, 3vw, 28px);
+    line-height: 1.55;
+    max-width: 680px;
+    margin: 0;
+    font-weight: 400;
+  }
+  .o3 .about p em { color: var(--accent); font-style: italic; }
+
+  .o3 .footer {
+    padding: 40px 24px 64px;
+    border-top: 1px solid var(--hairline);
+    font-size: 13px;
+    color: var(--muted);
+    display: flex; gap: 32px; flex-wrap: wrap;
+    font-family: var(--serif);
+  }
+  .o3 .footer strong {
+    color: var(--ink);
+    font-weight: 500;
+    display: block; margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  /* ─── 모바일 전용 미세 조정 ─── */
+  @media (max-width: 600px) {
+    .o2 .nav-links { gap: 18px; font-size: 10px; }
+    .o2 .hero { padding: 56px 24px 48px; }
+    .o2 .hero-image { margin: 48px 24px 0; }
+    .o2 .grid { padding: 64px 24px; gap: 48px 20px; }
+    .o2 .footer { gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <strong>아트갤러리 톤 시안</strong>
+  <span class="meta">3개 비교 · 모바일 first · 같은 콘텐츠</span>
+  <div class="tabs">
+    <button data-tab="o1" class="active">① Warm Editorial</button>
+    <button data-tab="o2">② Cool Museum</button>
+    <button data-tab="o3">③ Soft Gradient</button>
+  </div>
+</div>
+
+<!-- ════════════ OPTION 1 ════════════ -->
+<div class="stage active o1" id="o1">
+  <header class="nav">
+    <div class="logo">Sun-jae</div>
+    <nav class="nav-links">
+      <a href="#">Exhibitions</a>
+      <a href="#">Artists</a>
+      <a href="#">Visit</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Current Exhibition · 2026 Spring</div>
+    <h1>Quiet <em>Geometry</em></h1>
+    <dl class="meta">
+      <div><dt>기간</dt><dd>2026.03.14 — 06.02</dd></div>
+      <div><dt>큐레이터</dt><dd>이서연</dd></div>
+      <div><dt>참여 작가</dt><dd>6 artists</dd></div>
+    </dl>
+    <div class="hero-image"></div>
+  </section>
+
+  <section class="grid">
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=11" alt=""></div>
+      <div class="artist">강민수</div>
+      <div class="title">Untitled (Pale Form)</div>
+      <div class="year">2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=12" alt=""></div>
+      <div class="artist">박지원</div>
+      <div class="title">Slow Light II</div>
+      <div class="year">2024</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=13" alt=""></div>
+      <div class="artist">Ines Marquez</div>
+      <div class="title">Field, after dawn</div>
+      <div class="year">2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=14" alt=""></div>
+      <div class="artist">윤혜린</div>
+      <div class="title">기억의 표면</div>
+      <div class="year">2026</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=15" alt=""></div>
+      <div class="artist">Liam Park</div>
+      <div class="title">Composition no.7</div>
+      <div class="year">2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/750?random=16" alt=""></div>
+      <div class="artist">정수아</div>
+      <div class="title">조용한 기하</div>
+      <div class="year">2024</div>
+    </article>
+  </section>
+
+  <section class="about">
+    <div class="eyebrow">About</div>
+    <p>
+      선재 아트 스페이스는 일상의 침묵 속에서 발견되는 형태들을 큐레이션합니다.
+      거대한 선언이 아니라 작은 관찰의 누적으로 이루어진 작업들을 모읍니다.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <div>
+      <h4>Visit</h4>
+      서울 종로구 율곡로 121<br>화 — 일 11:00 — 18:00
+    </div>
+    <div>
+      <h4>Contact</h4>
+      hello@sunjae.art<br>+82 2 0000 0000
+    </div>
+    <div>
+      <h4>Newsletter</h4>
+      매월 첫째 주 발송
+    </div>
+  </footer>
+</div>
+
+<!-- ════════════ OPTION 2 ════════════ -->
+<div class="stage o2" id="o2">
+  <header class="nav">
+    <div class="logo"><em>Sun-jae</em></div>
+    <nav class="nav-links">
+      <a href="#">Exhibitions</a>
+      <a href="#">Artists</a>
+      <a href="#">Visit</a>
+      <a href="#">Shop</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Spring · MMXXVI</div>
+    <h1>Quiet <em>Geometry</em></h1>
+    <div class="dates">14 March — 02 June 2026</div>
+    <div class="hero-image"></div>
+  </section>
+
+  <section class="grid">
+    <article class="work">
+      <div class="num">No. 01</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=21&grayscale" alt=""></div>
+      <div class="artist">Kang Min-su</div>
+      <div class="title">Untitled (Pale Form), 2025</div>
+    </article>
+    <article class="work">
+      <div class="num">No. 02</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=22&grayscale" alt=""></div>
+      <div class="artist">Park Ji-won</div>
+      <div class="title">Slow Light II, 2024</div>
+    </article>
+    <article class="work">
+      <div class="num">No. 03</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=23&grayscale" alt=""></div>
+      <div class="artist">Ines Marquez</div>
+      <div class="title">Field, after dawn, 2025</div>
+    </article>
+    <article class="work">
+      <div class="num">No. 04</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=24&grayscale" alt=""></div>
+      <div class="artist">Yoon Hye-rin</div>
+      <div class="title">Surface of Memory, 2026</div>
+    </article>
+    <article class="work">
+      <div class="num">No. 05</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=25&grayscale" alt=""></div>
+      <div class="artist">Liam Park</div>
+      <div class="title">Composition no.7, 2025</div>
+    </article>
+    <article class="work">
+      <div class="num">No. 06</div>
+      <div class="ph"><img src="https://picsum.photos/600/600?random=26&grayscale" alt=""></div>
+      <div class="artist">Jung Su-ah</div>
+      <div class="title">Quiet Geometry, 2024</div>
+    </article>
+  </section>
+
+  <section class="about">
+    <p>
+      선재 아트 스페이스는 일상의 침묵 속에서 발견되는 형태들을 큐레이션한다.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <div><strong>Visit</strong>서울 종로구 율곡로 121</div>
+    <div><strong>Hours</strong>화 — 일  11 to 18</div>
+    <div><strong>Contact</strong>hello@sunjae.art</div>
+  </footer>
+</div>
+
+<!-- ════════════ OPTION 3 ════════════ -->
+<div class="stage o3" id="o3">
+  <header class="nav">
+    <div class="logo"><em>Sun-jae.</em></div>
+    <nav class="nav-links">
+      <a href="#">Exhibitions</a>
+      <a href="#">Artists</a>
+      <a href="#">Visit</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Current — Spring 2026</div>
+    <h1>Quiet <em>Geometry</em></h1>
+    <p class="lead">
+      여섯 작가, 여섯 시선. 조용한 형태가 만들어내는 봄의 기하.
+      2026.03.14 — 06.02
+    </p>
+    <div class="hero-image"></div>
+  </section>
+
+  <section class="grid">
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=31&blur=1" alt=""></div>
+      <div class="artist">강민수</div>
+      <div class="title">Untitled (Pale Form), 2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=32&blur=1" alt=""></div>
+      <div class="artist">박지원</div>
+      <div class="title">Slow Light II, 2024</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=33&blur=1" alt=""></div>
+      <div class="artist">Ines Marquez</div>
+      <div class="title">Field, after dawn, 2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=34&blur=1" alt=""></div>
+      <div class="artist">윤혜린</div>
+      <div class="title">기억의 표면, 2026</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=35&blur=1" alt=""></div>
+      <div class="artist">Liam Park</div>
+      <div class="title">Composition no.7, 2025</div>
+    </article>
+    <article class="work">
+      <div class="ph"><img src="https://picsum.photos/600/800?random=36&blur=1" alt=""></div>
+      <div class="artist">정수아</div>
+      <div class="title">조용한 기하, 2024</div>
+    </article>
+  </section>
+
+  <section class="about">
+    <p>
+      선재 아트 스페이스는 일상의 <em>침묵</em> 속에서 발견되는 형태들을 큐레이션합니다. 거대한 선언이 아니라 작은 관찰의 누적으로 이루어진 작업들.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <div><strong>Visit</strong>서울 종로구 율곡로 121</div>
+    <div><strong>Hours</strong>화 — 일 · 11:00 — 18:00</div>
+    <div><strong>Contact</strong>hello@sunjae.art</div>
+  </footer>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll(".chrome button");
+  const stages = document.querySelectorAll(".stage");
+  tabs.forEach(b => b.addEventListener("click", () => {
+    tabs.forEach(x => x.classList.toggle("active", x === b));
+    const target = b.dataset.tab;
+    stages.forEach(s => s.classList.toggle("active", s.id === target));
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }));
+</script>
+</body>
+</html>
