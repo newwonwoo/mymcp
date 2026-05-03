@@ -47,14 +47,27 @@ def run(target_dir: str = "src/") -> int:
         print(f"  [{mark}] {mod}: {msg}")
         import_pass &= ok
 
-    print("\n=== Stage 3: mock execution (skipped — see tests/) ===")
-    print("  (run `make test` for mock-based tool execution coverage)")
+    print("\n=== Stage 3: mock execution (pytest + moto) ===")
+    import subprocess
+
+    pytest_result = subprocess.run(
+        [sys.executable, "-m", "pytest", "tests/", "-q", "--no-header"],
+        capture_output=True,
+        text=True,
+        cwd=str(REPO_ROOT),
+    )
+    mock_pass = pytest_result.returncode == 0
+    print(f"  [{'PASS' if mock_pass else 'FAIL'}]")
+    print(pytest_result.stdout.strip().splitlines()[-1] if pytest_result.stdout.strip() else "")
+    if not mock_pass:
+        print(pytest_result.stdout)
+        print(pytest_result.stderr)
 
     print("\n=== Stage 4: pyflakes (undefined vars / unused imports) ===")
     grep_ok, grep_msg = stage_pyflakes(target_dir)
     print(f"  [{'PASS' if grep_ok else 'FAIL'}] {grep_msg}")
 
-    overall = ast_pass and import_pass and grep_ok
+    overall = ast_pass and import_pass and mock_pass and grep_ok
     print("\n=== Overall: " + ("PASS" if overall else "FAIL") + " ===")
     return 0 if overall else 1
 
