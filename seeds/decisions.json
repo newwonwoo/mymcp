@@ -68,5 +68,15 @@
     "created_at": "2026-05-03T00:00:00Z",
     "revoked_at": null,
     "source": "system_seed"
+  },
+  {
+    "decision_id": "D-SEED-008",
+    "text": "디자인 결정은 항상 시안 ≥3개를 본 뒤에 한다 — 시안 없이 단일 안 채택 금지 (designer 역할 한정)",
+    "scope": "global",
+    "project_id": null,
+    "active": "true",
+    "created_at": "2026-05-03T00:00:00Z",
+    "revoked_at": null,
+    "source": "system_seed"
   }
 ]
