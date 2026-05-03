@@ -7,8 +7,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+from botocore.exceptions import ClientError
+
 from src.db.repositories.decisions import DecisionsRepository
-from src.lib.errors import ValidationError
+from src.lib.errors import NotFoundError, ValidationError
 from src.server import mcp
 
 
@@ -44,3 +46,28 @@ def lock_decision(
     }
     DecisionsRepository().create(decision)
     return decision
+
+
+@mcp.tool()
+def revoke_decision(decision_id: str) -> dict:
+    """확정 결정을 무효화. 행은 보존(active="false" + revoked_at) — 감사 로그용.
+
+    Trigger phrases (한국어): "결정 무효화", "이 결정 풀어줘", "락 해제", "revoke 해줘"
+    Trigger phrases (English): "revoke decision", "unlock decision", "deactivate decision"
+
+    무효화 후 즉시 다음 resume_context 호출의 locked_decisions 배열에서 빠진다.
+    원본 행은 삭제되지 않고 active="false" 상태로 보존되어 회고·감사 가능.
+
+    Raises:
+        NotFoundError: 존재하지 않는 decision_id.
+    """
+    repo = DecisionsRepository()
+    try:
+        updated = repo.revoke(decision_id)
+    except ClientError as exc:
+        if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+            raise NotFoundError(f"Decision not found: {decision_id}") from exc
+        raise
+    if not updated:
+        raise NotFoundError(f"Decision not found: {decision_id}")
+    return updated

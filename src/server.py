@@ -38,5 +38,38 @@ def _register_tools() -> None:
 
 _register_tools()
 
-# Streamable HTTP transport — claude.ai/Claude Code 웹 커넥터 호환
-app = mcp.streamable_http_app()
+
+# ── X-API-Key 인증 미들웨어 ────────────────────────────────────────────
+# claude.ai 커넥터 측에서도 헤더를 보내지만, 서버에서도 강제 검증해야
+# 키 모르는 직접 호출(curl 등)을 차단할 수 있다.
+from starlette.responses import JSONResponse  # noqa: E402
+
+from src.lib.auth import verify_api_key  # noqa: E402
+
+
+async def _api_key_middleware(scope, receive, send):
+    """ASGI 미들웨어. CORS preflight(OPTIONS)와 헬스 경로는 통과."""
+    if scope["type"] != "http":
+        await _inner_app(scope, receive, send)
+        return
+    method = scope.get("method", "")
+    path = scope.get("path", "")
+    if method == "OPTIONS" or path in ("/health", "/"):
+        await _inner_app(scope, receive, send)
+        return
+
+    headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
+    provided = headers.get("x-api-key") or headers.get("authorization", "").removeprefix("Bearer ").strip()
+    if not verify_api_key(provided):
+        response = JSONResponse(
+            {"error": "unauthorized", "message": "Invalid or missing X-API-Key"},
+            status_code=401,
+        )
+        await response(scope, receive, send)
+        return
+    await _inner_app(scope, receive, send)
+
+
+# 내부 앱(FastMCP의 streamable HTTP) — 미들웨어가 통과시킨 요청만 도달
+_inner_app = mcp.streamable_http_app()
+app = _api_key_middleware

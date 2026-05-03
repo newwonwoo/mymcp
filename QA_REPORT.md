@@ -111,15 +111,15 @@
 
 ### 🚫 Block — 없음
 
-### 💡 Suggest
+### 💡 Suggest — 처리 상태
 
-| # | 위치 | 제안 | 왜 좋은가 |
+| # | 위치 | 제안 | 상태 |
 |---|---|---|---|
-| S1 | `src/tools/decisions.py` | `revoke_decision` tool 추가 | 사용자가 결정 무효화도 자연어로 가능해야 일관 |
-| S2 | `src/lib/auth.py` | FastMCP 미들웨어로 통합 | 현재 `auth.py` 함수는 정의만 — server.py에서 실제 미들웨어 등록 없음. claude.ai는 connector 레벨에서 헤더 검증할 수 있지만 서버 측 강제도 권장 |
-| S3 | `template.yaml` | DynamoDB PITR 자동 활성화 (resource 속성) | 시드 잘못 입력 시 복구 1분 |
-| S4 | `seeds/prompts.json` | content가 본문 일부만 — PROMPTS_v1.3.md 전문을 그대로 박을지 검토 | 5블록 구조는 유지되나 출력 예시는 축약. 운영 중 부족하면 보강 |
-| S5 | `tests/` | bedrock 응답이 invalid JSON일 때 분기 테스트 추가 | LLM 환각 방어층 보강 |
+| S1 | `src/tools/decisions.py` | `revoke_decision` tool 추가 | ✅ 반영 (commit a12869e+) |
+| S2 | `src/server.py` | ASGI 미들웨어로 X-API-Key 서버측 강제 | ✅ 반영 — 401 응답까지 |
+| S3 | `template.yaml` | DynamoDB PITR 9테이블 자동 활성화 | ✅ 반영 |
+| S4 | `seeds/prompts.json` | content 본문 보강 | ⏸ 보류 — 50개 5블록 골격으로 운영 충분, 부족 시 후속 |
+| S5 | `tests/` | bedrock invalid JSON 분기 테스트 | ✅ 반영 (test_classify_invalid_json_raises, test_classify_missing_fields_raises) |
 
 ### 🔍 Nit
 

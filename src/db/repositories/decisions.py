@@ -36,10 +36,16 @@ class DecisionsRepository:
 
         return sorted(items, key=lambda d: d.get("created_at", ""))
 
-    def revoke(self, decision_id: str) -> None:
+    def revoke(self, decision_id: str) -> dict | None:
         now = datetime.now(timezone.utc).isoformat()
-        self.table.update_item(
+        resp = self.table.update_item(
             Key={"decision_id": decision_id},
             UpdateExpression="SET active = :a, revoked_at = :r",
+            ConditionExpression=Attr("decision_id").exists(),
             ExpressionAttributeValues={":a": "false", ":r": now},
+            ReturnValues="ALL_NEW",
         )
+        return resp.get("Attributes")
+
+    def get(self, decision_id: str) -> dict | None:
+        return self.table.get_item(Key={"decision_id": decision_id}).get("Item")

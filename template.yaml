@@ -105,6 +105,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-roles-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: role_name, AttributeType: S }
       KeySchema:
@@ -115,6 +117,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-prompts-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: role_name, AttributeType: S }
         - { AttributeName: purpose_title, AttributeType: S }
@@ -133,6 +137,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-projects-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: project_id, AttributeType: S }
       KeySchema:
@@ -143,6 +149,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-presets-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: project_id, AttributeType: S }
         - { AttributeName: created_status, AttributeType: S }
@@ -155,6 +163,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-sessions-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: session_id, AttributeType: S }
         - { AttributeName: project_id, AttributeType: S }
@@ -173,6 +183,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-mistakes-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: mistake_id, AttributeType: S }
         - { AttributeName: role_name, AttributeType: S }
@@ -191,6 +203,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-phases-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: project_id, AttributeType: S }
         - { AttributeName: phase_name, AttributeType: S }
@@ -203,6 +217,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-failure-stories-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: project_id, AttributeType: S }
         - { AttributeName: created_at, AttributeType: S }
@@ -222,6 +238,8 @@ Resources:
     Properties:
       TableName: !Sub mcp-hub-decisions-${Stage}
       BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - { AttributeName: decision_id, AttributeType: S }
         - { AttributeName: scope, AttributeType: S }

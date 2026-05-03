@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from src.db.repositories.presets import PresetsRepository
 from src.db.repositories.projects import ProjectsRepository
-from src.tools.decisions import lock_decision
+from src.tools.decisions import lock_decision, revoke_decision
 from src.tools.sessions import resume_context
 
 
@@ -97,3 +97,36 @@ def test_lock_decision_project_scope_isolated(seeded):
     bundle_b = resume_context(project_id=project_b)
     assert any("프로젝트 A 한정" in d for d in bundle_a["locked_decisions"])
     assert not any("프로젝트 A 한정" in d for d in bundle_b["locked_decisions"])
+
+
+def test_revoke_decision_removes_from_resume(seeded):
+    """revoke_decision 호출 후 resume_context에서 빠지지만 행은 보존."""
+    project_id = _seed_project()
+    locked = lock_decision(text="임시 결정 — 곧 무효화될 예정")
+    decision_id = locked["decision_id"]
+
+    before = resume_context(project_id=project_id)
+    assert any("임시 결정" in d for d in before["locked_decisions"])
+
+    revoked = revoke_decision(decision_id=decision_id)
+    assert revoked["active"] == "false"
+    assert revoked["revoked_at"]
+
+    after = resume_context(project_id=project_id)
+    assert not any("임시 결정" in d for d in after["locked_decisions"])
+
+    # 행 자체는 보존 (감사 로그)
+    from src.db.repositories.decisions import DecisionsRepository
+    item = DecisionsRepository().get(decision_id)
+    assert item is not None
+    assert item["active"] == "false"
+
+
+def test_revoke_decision_unknown_raises(seeded):
+    """존재하지 않는 decision_id면 NotFoundError."""
+    import pytest
+
+    from src.lib.errors import NotFoundError
+
+    with pytest.raises(NotFoundError):
+        revoke_decision(decision_id="does-not-exist")

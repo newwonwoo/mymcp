@@ -89,3 +89,23 @@ def test_classify_strips_codefence(seeded, bedrock_stub):
     }) + "\n```")
     result = classify_project(description="간단 앱")
     assert result["status"] == "draft"
+
+
+def test_classify_invalid_json_raises(seeded, bedrock_stub):
+    """LLM 환각 — JSON 형식 자체가 깨졌을 때 ValueError로 노출 (silent fallback 금지)."""
+    import pytest
+
+    bedrock_stub.set_response("죄송합니다, JSON으로 답변하지 못합니다. 자유롭게 의견드립니다.")
+    with pytest.raises((ValueError,)):
+        classify_project(description="모바일 앱")
+
+
+def test_classify_missing_fields_raises(seeded, bedrock_stub):
+    """LLM이 형식은 JSON이지만 필수 키가 없는 응답을 줄 때 ValidationError."""
+    import pytest
+
+    from src.lib.errors import ValidationError
+
+    bedrock_stub.set_response(json.dumps({"comment": "구체적 추천 어려움"}))
+    with pytest.raises((ValidationError, KeyError)):
+        classify_project(description="모바일 앱")
