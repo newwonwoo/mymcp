@@ -15,7 +15,15 @@ Parameters:
     AllowedValues: [dev, prod]
   BedrockModel:
     Type: String
-    Default: anthropic.claude-3-5-sonnet-20241022-v2:0
+    Default: anthropic.claude-opus-4-7-20260101-v1:0
+    Description: >
+      Bedrock model ID. Default targets Claude Opus 4.7 (per user lock D-SEED-009 — all calls Opus).
+      The exact dated suffix changes per Anthropic release; verify with
+      `aws bedrock list-foundation-models --region ap-northeast-2 | grep opus`
+      and override at deploy time:
+        sam deploy --parameter-overrides BedrockModel=<exact-id>
+      For cross-region inference profiles (recommended for Opus), use the
+      apac.* prefix, e.g. apac.anthropic.claude-opus-4-7-...:0
 
 Globals:
   Function:

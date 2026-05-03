@@ -78,5 +78,15 @@
     "created_at": "2026-05-03T00:00:00Z",
     "revoked_at": null,
     "source": "system_seed"
+  },
+  {
+    "decision_id": "D-SEED-009",
+    "text": "Bedrock 모델은 Claude Opus 단일 (classify_project / run_failure_story 모두) — 1인용 비용 ~$2/월 부담은 무시, premortem 게이트의 hidden_assumption 식별 정확도와 M-SEED-024(planning-optimism) 차단 품질 우선",
+    "scope": "global",
+    "project_id": null,
+    "active": "true",
+    "created_at": "2026-05-03T00:00:00Z",
+    "revoked_at": null,
+    "source": "system_seed"
   }
 ]

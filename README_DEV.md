@@ -40,8 +40,13 @@ mymcp/
 # AWS 자격증명 (본인 계정, ap-northeast-2 권한)
 aws sts get-caller-identity
 
-# Bedrock Anthropic Claude 3.5 Sonnet 모델 access 활성화
+# Bedrock Anthropic Claude Opus 4.7 모델 access 활성화 (D-SEED-009)
 # AWS Console → Bedrock → Model access (반드시 ap-northeast-2)
+# Cross-region inference profile (apac.*) 사용 시 해당 항목도 함께 활성화
+
+# 정확한 modelId 확인:
+aws bedrock list-foundation-models --region ap-northeast-2 \
+  --query 'modelSummaries[?contains(modelId, `opus`)].modelId' --output table
 
 # SAM CLI
 sam --version  # >= 1.100
@@ -169,9 +174,10 @@ DecisionsRepository().revoke("D-USER-xxx")
 | API Gateway HTTP | 100만 | ~1만 | $0 |
 | DynamoDB 읽/쓰기 | 25 RCU/WCU | 평균 1-2 | $0 |
 | DynamoDB 저장 | 25GB | <100MB | $0 |
-| **Bedrock Claude 3.5 Sonnet** | 없음 | classify ~50회/월 | **~$0.5** |
+| **Bedrock Claude Opus 4.7** (D-SEED-009) | 없음 | classify ~5/월 + premortem ~10/월 | **~$2.0** |
 
-총 ~$0.5/월.
+총 ~$2/월. Sonnet 대비 5배지만 1인용 절대값은 무시 가능 — 품질 우선 결정.
+premortem 게이트(M-SEED-024 차단)의 "단일 hidden_assumption" 식별 정확도가 이 비용을 정당화.
 
 ### CloudWatch 알람 (권장)
 ```bash
